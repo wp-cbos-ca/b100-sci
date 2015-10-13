@@ -5,6 +5,10 @@ defined( 'ABSPATH' ) || die();
 function get_plugins_data() {
     $plugins = array (
         array ( 
+        'name' => 'WP Scientific', 'folder' => 'wp-scientific', 'file' => 'plugin.php', 
+        'activate' => 1, 'local' => 1, 'online' => 1,
+        ),        
+        array ( 
         'name' => 'BackUpWordPress', 'folder' => 'backupwordpress', 'file' => 'backupwordpress.php', 
         'activate' => 1, 'local' => 1, 'online' => 1, 
         ),
