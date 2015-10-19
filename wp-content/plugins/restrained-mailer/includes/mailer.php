@@ -10,20 +10,27 @@ function process_contact_form(){
           return;
         }
         $items = array( 'contact_name', 'contact_email', 'contact_subject', 'contact_message' );
-        $response['message'] = '';
+        $response['form_response'] = '';
         foreach ( $_POST as $key => $value ) {
             if ( in_array( $key, $items ) ){
                 $response[$key] = esc_attr( $_POST[$key] );
             }
         }
         if ( ! empty ( $response ) ){
-            $response['contact_subject'] = $data['sent_from'];
-            $r = mail_contact_form( get_mail_admin(), $response );
+            $email = get_mailer_data_email();
+            $response['contact_subject'] = $email['sent_from'];
+            $r = mail_message( get_mail_admin(), $response );
+            $meta = get_mailer_data_meta();
            if ( $r === true ){
-               $response['form_response'] = $data['success']['text'];
+               $response['form_response'] = $meta['success']['text'];
+               $response['contact_name'] = '';
+               $response['contact_email'] = '';
+               $response['contact_subject'] = '';
+               $response['contact_message'] = '';
+               $response['message'] = '';
            }
            else {
-               $response['form_response'] = $data['failure']['text'];
+               $response['form_response'] = $meta['failure']['text'];
            }
            
         }
@@ -53,8 +60,8 @@ function get_mail_admin() {
     }
 }
 
-function mail_contact_form( $mail_admin, $items ) {
-    $data = get_mailer_data();
+function mail_message( $mail_admin, $items ) {
+    $data = get_mailer_data_email();
     $str  = isset( $items['contact_name'] ) ? $data['from'] . $items['contact_name'] . "\r\n" : $data['from'] . ' ' . $data['na'];
     $str .= isset( $items['contact_email'] ) ? $data['email'] . $items['contact_email'] . "\r\n" : $data['email'] . ' ' . $data['na'];
     $str .= isset( $items['contact_message'] ) ? $items['contact_message'] . "\r\n" : $data['message'] . ' ' . $data['na']; 
@@ -62,7 +69,7 @@ function mail_contact_form( $mail_admin, $items ) {
     $contact_name = isset( $items['contact_name'] ) ? $items['contact_name'] : $data['na'];
     $contact_email = isset( $items['contact_email'] ) ? $items['contact_email'] : $data['na'];
     $headers = 'From: ' . $contact_name . ' <' . $contact_email . '>' . "\r\n";
-    $contact_subject = isset( $items['contact_subject'] ) ? $items['contact_subject'] : $data['na'];
+    $contact_subject = isset( $items['contact_subject'] ) ? $items['contact_subject'] : $data['no_subject'];
     $r = wp_mail( $mail_admin, $contact_subject, $str, $headers );
     return $r;
 }

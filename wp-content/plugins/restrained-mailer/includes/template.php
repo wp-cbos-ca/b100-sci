@@ -2,9 +2,9 @@
  
 defined( 'ABSPATH' ) || die();
 
-function get_contact_form() {
-    $items = get_contact_form_data();
-    $meta = get_contact_form_data_meta();
+function get_mailer_form() {
+    $items = get_mailer_data();
+    $meta = get_mailer_data_meta();
     $response = process_contact_form();
     $str = '<div class="contact-form">' . PHP_EOL;
     $str .= sprintf( '<form action="" method="post">%s', PHP_EOL );
@@ -12,13 +12,16 @@ function get_contact_form() {
     foreach ( $items as $item ) {
         if ( $item['display'] ) {
             $required = $item['required'] ? 'required' : '';
-            $placeholder = ! empty( $item['placeholder'] ) ? 'placeholder="%s"' : '';
+            $placeholder = ! empty( $item['placeholder'] ) ? 'placeholder="%s"' : '';            
             switch( $item['type'] ) {
                 case 'text' :
-                $str .= sprintf('<p>%s<br /><input type="text" name="contact_%s" %s maxlength="%s" %s value="%s" /></p>%s', $item['label'], $item['name'], $required, $item['maxlength'], $placeholder, $response[$item['name']], PHP_EOL );    
+                $str .= sprintf('<p>%s<br /><input type="text" name="contact_%s" %s maxlength="%s" %s value="%s" /></p>%s', $item['label'], $item['name'], $required, $item['maxlength'], $placeholder, $response[ 'contact_' . $item['name'] ], PHP_EOL );    
+                break;
+                case 'email' :
+                $str .= sprintf('<p>%s<br /><input type="email" name="contact_%s" %s maxlength="%s" %s value="%s" /></p>%s', $item['label'], $item['name'], $required, $item['maxlength'], $placeholder, $response[ 'contact_' . $item['name'] ], PHP_EOL );    
                 break;
                 case 'textarea' : 
-                $str .= sprintf('<p>%s<br /><textarea name="contact_%s" %s maxlength="%s" %s>%s</textarea></p>%s', $item['label'], $item['name'], $required, $items['maxlength'], $placeholder, $response[$item['name']], PHP_EOL );
+                $str .= sprintf('<p>%s<br /><textarea name="contact_%s" %s maxlength="%s" %s>%s</textarea></p>%s', $item['label'], $item['name'], $required, $item['maxlength'], $placeholder, $response[ 'contact_' . $item['name'] ], PHP_EOL );
                 break;
                 default:
             }            
